@@ -1,0 +1,44 @@
+{
+	"name": "Python 3.11",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": ".."
+	},
+
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Set *default* container specific settings.json values on container create.
+			"settings": {
+				// Python
+				"python": "/opt/pysetup/.venv/bin/python",
+
+				// Pylint
+				"python.linting.enabled": true,
+				"python.linting.pylintEnabled": true,
+				"python.linting.pylintPath": "/opt/pysetup/.venv/bin/pylint",
+				"pylint.interpreter": ["/opt/pysetup/.venv/bin/python"],
+				"pylint.args": ["--rcfile=${workspaceFolder}/.pylintrc"],
+
+				// Black
+				"editor.defaultFormatter": "ms-python.black-formatter",
+				"editor.formatOnSave": false,
+				"python.formatting.provider": "black",
+				"python.formatting.blackPath": "/opt/pysetup/.venv/bin/black",
+				"python.formatting.blackArgs": [
+					"-l 120"
+				]
+			},
+			
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"ms-python.pylint",
+				"ms-python.isort",
+				"ms-python.black-formatter"
+			]
+		}
+	}
+}

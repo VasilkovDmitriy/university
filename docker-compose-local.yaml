@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  web:
+    build: .
+    command: bash -c "python main.py"
+    volumes:
+      - ./:/app
+    ports:
+      - 8000:8000
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres_user:postgres_passwd@postgresql_host:5432/postgres_db
+    depends_on:
+      - db
+
+  db:
+    hostname: postgresql_host
+    container_name: university_db
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres_user
+      - POSTGRES_PASSWORD=postgres_passwd
+      - POSTGRES_DB=postgres_db
+    ports:
+      - 54320:5432
