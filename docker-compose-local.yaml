@@ -9,12 +9,11 @@ services:
     ports:
       - 8000:8000
     environment:
-      - DATABASE_URL=postgresql+asyncpg://postgres_user:postgres_passwd@postgresql_host:5432/postgres_db
+      - DATABASE_URL=postgresql+asyncpg://postgres_user:postgres_passwd@db:5432/postgres_db
     depends_on:
       - db
 
   db:
-    hostname: postgresql_host
     container_name: university_db
     image: postgres:15-alpine
     restart: always
@@ -26,7 +25,6 @@ services:
       - 54320:5432
 
   test_db:
-    hostname: postgresql_test_host
     container_name: university_test_db
     image: postgres:15-alpine
     restart: always
@@ -36,3 +34,7 @@ services:
       - POSTGRES_DB=postgres_db
     ports:
       - 54330:5432
+
+networks:
+  custom:
+    driver: bridge
