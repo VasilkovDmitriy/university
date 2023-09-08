@@ -7,7 +7,8 @@ ENV PYTHONUNBUFFERED=1 \
     POETRY_VIRTUALENVS_IN_PROJECT=true \
     POETRY_NO_INTERACTION=1 \
     PYSETUP_PATH="/opt/pysetup" \
-    VENV_PATH="/opt/pysetup/.venv"
+    VENV_PATH="/opt/pysetup/.venv" \
+    USERNAME="newuser"
 
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
@@ -16,14 +17,26 @@ RUN apt-get update \
         curl \
         build-essential \
         libpq-dev \
-        python3-dev
+        python3-dev \
+        # dev
+        git
 
 RUN curl -sSLcurl -sSL https://install.python-poetry.org | python3 -
 
 WORKDIR $PYSETUP_PATH
 COPY poetry.lock pyproject.toml ./
-RUN poetry install --only main
+RUN poetry install
 
 WORKDIR /app
 
 COPY ./ ./
+
+RUN useradd -ms /bin/bash $USERNAME
+RUN chown -R $USERNAME:$USERNAME /app
+RUN chmod 755 /app
+USER $USERNAME
+
+RUN mkdir -p $HOME/.vscode-server/data/Machine
+
+RUN echo "{\"pylint.args\": [\"--rcfile=/app/.pylintrc\"]}" >> \
+    $HOME/.vscode-server/data/Machine/settings.json
