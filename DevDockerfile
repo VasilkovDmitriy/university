@@ -32,6 +32,7 @@ WORKDIR /app
 COPY ./ ./
 
 RUN useradd -ms /bin/bash $USERNAME
+
 RUN chown -R $USERNAME:$USERNAME /app
 RUN chmod 755 /app
 USER $USERNAME

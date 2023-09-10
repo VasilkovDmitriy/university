@@ -7,7 +7,8 @@ ENV PYTHONUNBUFFERED=1 \
     POETRY_VIRTUALENVS_IN_PROJECT=true \
     POETRY_NO_INTERACTION=1 \
     PYSETUP_PATH="/opt/pysetup" \
-    VENV_PATH="/opt/pysetup/.venv"
+    VENV_PATH="/opt/pysetup/.venv" \
+    USERNAME="newuser"
 
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
@@ -27,3 +28,9 @@ RUN poetry install --only main
 WORKDIR /app
 
 COPY ./ ./
+
+RUN useradd -ms /bin/bash $USERNAME
+
+RUN chown -R $USERNAME:$USERNAME /app
+RUN chmod 755 /app
+USER $USERNAME
