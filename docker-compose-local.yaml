@@ -10,6 +10,7 @@ services:
       - 8000:8000
     environment:
       - DATABASE_URL=postgresql+asyncpg://postgres_user:postgres_passwd@db:5432/postgres_db
+      - TEST_DATABASE_URL=postgresql+asyncpg://test_user:test_passwd@test_db:5432/test_postgres_db
     depends_on:
       - db
     networks:
@@ -35,9 +36,9 @@ services:
     image: postgres:15-alpine
     restart: always
     environment:
-      - POSTGRES_USER=postgres_user
-      - POSTGRES_PASSWORD=postgres_passwd
-      - POSTGRES_DB=postgres_db
+      - POSTGRES_USER=test_user
+      - POSTGRES_PASSWORD=test_passwd
+      - POSTGRES_DB=test_postgres_db
     ports:
       - 54330:5432
     networks:

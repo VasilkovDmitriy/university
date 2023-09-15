@@ -2,7 +2,7 @@ build:
 	docker-compose -f docker-compose-local.yaml build
 
 up:
-	docker-compose -f docker-compose-local.yaml up -d
+	docker-compose -f docker-compose-local.yaml up
 
 down:
 	docker-compose -f docker-compose-local.yaml down && docker network prune --force
