@@ -11,7 +11,7 @@ app = FastAPI(title="luchanos-oxford-university")
 main_api_router = APIRouter()
 
 # set routes to the app instance
-main_api_router.include_router(user_router, prefix="/user", tags=["user"])
+main_api_router.include_router(user_router, prefix="/users", tags=["user"])
 app.include_router(main_api_router)
 
 if __name__ == "__main__":

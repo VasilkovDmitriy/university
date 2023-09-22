@@ -5,7 +5,7 @@ async def test_create_user(client, get_user_from_database):
         "email": "user@example.com"
     }
 
-    resp = await client.post('/user/', json=user_data)
+    resp = await client.post('/users/', json=user_data)
     data_from_resp = resp.json()
 
     assert resp.status_code == 200
