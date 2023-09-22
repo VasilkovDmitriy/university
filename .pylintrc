@@ -634,5 +634,5 @@ redefining-builtins-modules=six.moves,past.builtins,future.builtins,builtins,io
 extension-pkg-whitelist=pydantic
 disable=
     C0114, # missing-module-docstring
-    E0015, # unrecognized-option
+    C0115, # missing-class-docstring
     C0116, # missing-function-docstring

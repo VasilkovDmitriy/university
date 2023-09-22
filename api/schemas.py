@@ -2,20 +2,13 @@ import re
 import uuid
 
 from fastapi import HTTPException
-from pydantic import BaseModel, EmailStr, validator
+from pydantic import BaseModel, EmailStr, constr, validator
 
 
 LETTER_MATCH_PATTERN = re.compile(r"^[а-яА-Яa-zA-Z\-]+$")
 
 
-class TunedModel(BaseModel):
-    class Config:
-        """tells pydantic to convert even non dict obj to json"""
-
-        orm_mode = True
-
-
-class ShowUser(TunedModel):
+class ShowUser(BaseModel):
     user_id: uuid.UUID
     name: str
     surname: str
@@ -28,8 +21,33 @@ class UserCreate(BaseModel):
     surname: str
     email: EmailStr
 
-    @classmethod
     @validator("name")
+    @classmethod
+    def validate_name(cls, value):
+        if not LETTER_MATCH_PATTERN.match(value):
+            raise HTTPException(status_code=422, detail="Name should contains only letters")
+        return value
+
+    @validator("surname")
+    @classmethod
+    def validate_surname(cls, value):
+        if not LETTER_MATCH_PATTERN.match(value):
+            raise HTTPException(status_code=422, detail="Surname should contains only letters")
+        return value
+
+
+class DeleteUserResponse(BaseModel):
+    deleted_user_id: uuid.UUID
+
+
+
+class UpdatedUserRequest(BaseModel):
+    name: constr(min_length=1) | None
+    surname: constr(min_length=1) | None
+    email: EmailStr | None
+
+    @validator("name")
+    @classmethod
     def validate_name(cls, value):
         if not LETTER_MATCH_PATTERN.match(value):
             raise HTTPException(
@@ -37,8 +55,8 @@ class UserCreate(BaseModel):
             )
         return value
 
-    @classmethod
     @validator("surname")
+    @classmethod
     def validate_surname(cls, value):
         if not LETTER_MATCH_PATTERN.match(value):
             raise HTTPException(
@@ -47,5 +65,5 @@ class UserCreate(BaseModel):
         return value
 
 
-class DeleteUserResponse(BaseModel):
-    deleted_user_id: uuid.UUID
+class UpdatedUserResponse(BaseModel):
+    updated_user_id: uuid.UUID
