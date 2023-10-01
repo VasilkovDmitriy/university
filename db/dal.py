@@ -39,6 +39,12 @@ class UserDAL:
         res = await self.db_session.execute(query)
         return res.scalar()
 
+    async def get_user_by_email(self, email: str) -> User | None:
+        query = select(User).where(User.email == email)
+
+        res = await self.db_session.execute(query)
+        return res.scalar()
+
     async def update_user(self, user_id: UUID, **kwargs) -> UUID | None:
         query = (
             update(User)

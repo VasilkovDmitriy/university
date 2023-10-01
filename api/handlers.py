@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.actions.user import create_new_user_action, delete_user_action, get_user_by_id_action, update_user_action
+from api.actions.user import create_new_user_action, delete_user_action, get_user_by_email_action, get_user_by_id_action, update_user_action
 from api.schemas import DeleteUserResponse, ShowUser, UpdatedUserRequest, UpdatedUserResponse, UserCreate
 from db.session import get_db
 
@@ -13,6 +13,11 @@ user_router = APIRouter()
 @user_router.post("/")
 async def create_user(body: UserCreate, session: AsyncSession = Depends(get_db)) -> ShowUser:
     """Create user handler."""
+
+    if await get_user_by_email_action(body.email, session):
+        raise HTTPException(
+            status_code=409, detail='A user with this email already exists'
+        )
 
     return await create_new_user_action(body, session)
 
@@ -45,6 +50,12 @@ async def get_user(user_id: UUID, session: AsyncSession = Depends(get_db)) -> Sh
 async def update_user(
     user_id: UUID, body: UpdatedUserRequest, session: AsyncSession = Depends(get_db)
 ) -> UpdatedUserResponse:
+
+    if body.email and await get_user_by_email_action(body.email, session):
+        raise HTTPException(
+            status_code=409, detail='A user with this email already exists'
+        )
+
     updated_user_params = body.dict(exclude_none=True)
 
     if updated_user_params == {}:

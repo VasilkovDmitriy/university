@@ -35,6 +35,9 @@ async def get_user_by_id_action(user_id: UUID, session: AsyncSession) -> ShowUse
         user_dal = UserDAL(session)
         user = await user_dal.get_user_by_id(user_id)
 
+        if not user:
+            return None
+
         return ShowUser(
             user_id=user.user_id,
             name=user.name,
@@ -42,6 +45,20 @@ async def get_user_by_id_action(user_id: UUID, session: AsyncSession) -> ShowUse
             email=user.email,
             is_active=user.is_active,
         )
+
+
+async def get_user_by_email_action(email: str, session: AsyncSession) -> ShowUser | None:
+    async with session.begin():
+        user_dal = UserDAL(session)
+
+        if user := await user_dal.get_user_by_email(email):
+            return ShowUser(
+                user_id=user.user_id,
+                name=user.name,
+                surname=user.surname,
+                email=user.email,
+                is_active=user.is_active,
+            )
 
 
 async def update_user_action(user_id: UUID, updated_user_params: dict, session: AsyncSession) -> UUID | None:
