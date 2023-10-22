@@ -5,7 +5,8 @@ from uuid import UUID
 import asyncpg
 import pytest
 from httpx import AsyncClient
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 from sqlalchemy.sql import text
@@ -16,7 +17,9 @@ from db.session import get_db
 from main import app
 
 test_engine = create_async_engine(settings.TEST_DATABASE_URL, poolclass=NullPool)
-test_session_maker = sessionmaker(test_engine, class_=AsyncSession, expire_on_commit=False)
+test_session_maker = sessionmaker(
+    test_engine, class_=AsyncSession, expire_on_commit=False
+)
 Base.metadata.bind = test_engine
 
 
@@ -24,10 +27,11 @@ async def override_get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with test_session_maker() as session:
         yield session
 
+
 app.dependency_overrides[get_db] = override_get_async_session
 
 
-@pytest.fixture(autouse=True, scope='session')
+@pytest.fixture(autouse=True, scope="session")
 async def prepare_database():
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
@@ -36,14 +40,14 @@ async def prepare_database():
         await conn.run_sync(Base.metadata.drop_all)
 
 
-@pytest.fixture(autouse=True, scope='function')
+@pytest.fixture(autouse=True, scope="function")
 async def truncate_tables():
     async with test_engine.begin() as conn:
         for table in Base.metadata.sorted_tables:
-            await conn.execute(text(f'TRUNCATE {table.name} CASCADE;'))
+            await conn.execute(text(f"TRUNCATE {table.name} CASCADE;"))
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def event_loop():
     loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
@@ -58,7 +62,9 @@ async def client() -> AsyncGenerator[AsyncClient, None]:
 
 @pytest.fixture(scope="session")
 async def asyncpg_pool():
-    pool = await asyncpg.create_pool("".join(settings.TEST_DATABASE_URL.split("+asyncpg")))
+    pool = await asyncpg.create_pool(
+        "".join(settings.TEST_DATABASE_URL.split("+asyncpg"))
+    )
     yield pool
     await pool.close()
 
@@ -67,7 +73,9 @@ async def asyncpg_pool():
 async def get_user_from_database(asyncpg_pool):
     async def get_user(user_id: str):
         async with asyncpg_pool.acquire() as connection:
-            return await connection.fetch("SELECT * FROM users WHERE user_id = $1;", user_id)
+            return await connection.fetch(
+                "SELECT * FROM users WHERE user_id = $1;", user_id
+            )
 
     return get_user
 
@@ -90,5 +98,5 @@ async def create_user_in_database(asyncpg_pool):
                 email,
                 is_active,
             )
-    
+
     return create_user

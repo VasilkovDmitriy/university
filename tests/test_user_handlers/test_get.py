@@ -29,7 +29,13 @@ async def test_get_user_id_validation_error(client):
     invalid_user_id = 123
 
     resp = await client.get(f"/users/{invalid_user_id}")
-    expected_detail = [{'loc': ['path', 'user_id'], 'msg': 'value is not a valid uuid', 'type': 'type_error.uuid'}]
+    expected_detail = [
+        {
+            "loc": ["path", "user_id"],
+            "msg": "value is not a valid uuid",
+            "type": "type_error.uuid",
+        }
+    ]
 
     assert 422 == resp.status_code
     assert expected_detail == resp.json()["detail"]
@@ -41,4 +47,4 @@ async def test_get_user_not_found(client):
     resp = await client.get(f"/users/{user_id}")
 
     assert 404 == resp.status_code
-    assert f'User with id {user_id} not found.' == resp.json()["detail"]
+    assert f"User with id {user_id} not found." == resp.json()["detail"]

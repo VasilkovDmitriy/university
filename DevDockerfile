@@ -35,8 +35,3 @@ RUN useradd -ms /bin/bash $USERNAME
 RUN chown -R $USERNAME:$USERNAME /app
 RUN chmod 755 /app
 USER $USERNAME
-
-RUN mkdir -p $HOME/.vscode-server/data/Machine
-
-RUN echo "{\"pylint.args\": [\"--rcfile=/app/.pylintrc\"]}" >> \
-    $HOME/.vscode-server/data/Machine/settings.json

@@ -2,7 +2,8 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.schemas import ShowUser, UserCreate
+from api.schemas import ShowUser
+from api.schemas import UserCreate
 from db.dal import UserDAL
 
 
@@ -30,7 +31,9 @@ async def delete_user_action(user_id: UUID, session: AsyncSession) -> UUID | Non
         return deleted_user_id
 
 
-async def get_user_by_id_action(user_id: UUID, session: AsyncSession) -> ShowUser | None:
+async def get_user_by_id_action(
+    user_id: UUID, session: AsyncSession
+) -> ShowUser | None:
     async with session.begin():
         user_dal = UserDAL(session)
         user = await user_dal.get_user_by_id(user_id)
@@ -47,7 +50,9 @@ async def get_user_by_id_action(user_id: UUID, session: AsyncSession) -> ShowUse
         )
 
 
-async def get_user_by_email_action(email: str, session: AsyncSession) -> ShowUser | None:
+async def get_user_by_email_action(
+    email: str, session: AsyncSession
+) -> ShowUser | None:
     async with session.begin():
         user_dal = UserDAL(session)
 
@@ -61,7 +66,9 @@ async def get_user_by_email_action(email: str, session: AsyncSession) -> ShowUse
             )
 
 
-async def update_user_action(user_id: UUID, updated_user_params: dict, session: AsyncSession) -> UUID | None:
+async def update_user_action(
+    user_id: UUID, updated_user_params: dict, session: AsyncSession
+) -> UUID | None:
     async with session.begin():
         user_dal = UserDAL(session)
         updated_user_id = await user_dal.update_user(user_id, **updated_user_params)
