@@ -18,7 +18,6 @@ RUN apt-get update \
         build-essential \
         libpq-dev \
         python3-dev \
-        # dev
         git
 
 RUN curl -sSLcurl -sSL https://install.python-poetry.org | python3 -
