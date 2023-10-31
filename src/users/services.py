@@ -1,10 +1,9 @@
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from api.schemas import ShowUser
-from api.schemas import UserCreate
-from db.dal import UserDAL
+from users.api.schemas import ShowUser
+from users.api.schemas import UserCreate
+from users.db.dal import UserDAL
 
 
 async def create_new_user_action(body: UserCreate, session: AsyncSession) -> ShowUser:

@@ -3,7 +3,7 @@ version: "3.8"
 services:
   web:
     build: .
-    command: bash -c "python main.py"
+    command: bash -c "python src/main.py"
     volumes:
       - ./:/app
     ports:

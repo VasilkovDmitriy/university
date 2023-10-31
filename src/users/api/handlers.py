@@ -1,21 +1,20 @@
 from uuid import UUID
 
+from db.session import get_db
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from api.actions.user import create_new_user_action
-from api.actions.user import delete_user_action
-from api.actions.user import get_user_by_email_action
-from api.actions.user import get_user_by_id_action
-from api.actions.user import update_user_action
-from api.schemas import DeleteUserResponse
-from api.schemas import ShowUser
-from api.schemas import UpdatedUserRequest
-from api.schemas import UpdatedUserResponse
-from api.schemas import UserCreate
-from db.session import get_db
+from users.api.schemas import DeleteUserResponse
+from users.api.schemas import ShowUser
+from users.api.schemas import UpdatedUserRequest
+from users.api.schemas import UpdatedUserResponse
+from users.api.schemas import UserCreate
+from users.services import create_new_user_action
+from users.services import delete_user_action
+from users.services import get_user_by_email_action
+from users.services import get_user_by_id_action
+from users.services import update_user_action
 
 user_router = APIRouter()
 
