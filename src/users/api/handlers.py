@@ -1,10 +1,11 @@
 from uuid import UUID
 
-from db.session import get_db
 from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from db.session import get_db
 from users.api.schemas import DeleteUserResponse
 from users.api.schemas import ShowUser
 from users.api.schemas import UpdatedUserRequest

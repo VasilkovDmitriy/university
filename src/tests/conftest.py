@@ -11,10 +11,10 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 from sqlalchemy.sql import text
 
-from src import settings
-from src.db.models import Base
-from src.db.session import get_db
-from src.main import app
+import settings
+from db.models import Base
+from db.session import get_db
+from main import app
 
 test_engine = create_async_engine(settings.TEST_DATABASE_URL, poolclass=NullPool)
 test_session_maker = sessionmaker(

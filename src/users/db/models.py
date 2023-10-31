@@ -1,10 +1,11 @@
 import uuid
 
-from db.models import Base
 from sqlalchemy import Boolean
 from sqlalchemy import Column
 from sqlalchemy import String
 from sqlalchemy.dialects.postgresql import UUID
+
+from db.models import Base
 
 
 class User(Base):

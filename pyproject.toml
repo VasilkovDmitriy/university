@@ -35,5 +35,5 @@ build-backend = "poetry.core.masonry.api"
 
 
 [tool.pytest.ini_options]
-pythonpath = ["."]
+pythonpath = ["./src"]
 asyncio_mode = "auto"

@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from users.api.schemas import ShowUser
 from users.api.schemas import UserCreate
 from users.db.dal import UserDAL
