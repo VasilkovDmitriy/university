@@ -2,7 +2,12 @@ import pytest
 
 
 async def test_create_user(client, get_user_from_database):
-    user_data = {"name": "Vasja", "surname": "Pupkin", "email": "user@example.com"}
+    user_data = {
+        "name": "Vasja",
+        "surname": "Pupkin",
+        "email": "user@example.com",
+        "password": "12345678",
+    }
 
     resp = await client.post("/users/", json=user_data)
     data_from_resp = resp.json()
@@ -14,7 +19,7 @@ async def test_create_user(client, get_user_from_database):
     assert data_from_resp["email"] == user_data["email"]
     assert data_from_resp["is_active"] is True
 
-    users_from_db = await get_user_from_database(data_from_resp["user_id"])
+    users_from_db = await get_user_from_database(data_from_resp["id"])
 
     assert len(users_from_db) == 1
     user_from_db = dict(users_from_db[0])
@@ -23,11 +28,16 @@ async def test_create_user(client, get_user_from_database):
     assert user_from_db["surname"] == user_data["surname"]
     assert user_from_db["email"] == user_data["email"]
     assert user_from_db["is_active"] is True
-    assert str(user_from_db["user_id"]) == data_from_resp["user_id"]
+    assert str(user_from_db["id"]) == data_from_resp["id"]
 
 
 async def test_create_user_duplicate_email_error(client):
-    user_data = {"name": "Vasja", "surname": "Pupkin", "email": "user@example.com"}
+    user_data = {
+        "name": "Vasja",
+        "surname": "Pupkin",
+        "email": "user@example.com",
+        "password": "12345678",
+    }
 
     resp = await client.post("/users/", json=user_data)
     assert 200 == resp.status_code
@@ -36,6 +46,7 @@ async def test_create_user_duplicate_email_error(client):
         "name": "Petr",
         "surname": "Petrov",
         "email": "user@example.com",
+        "password": "87654321",
     }
     resp = await client.post("/users/", json=another_user_data_with_duplicate_email)
 
@@ -65,20 +76,25 @@ async def test_create_user_duplicate_email_error(client):
                     "msg": "field required",
                     "type": "value_error.missing",
                 },
+                {
+                    "loc": ["body", "password"],
+                    "msg": "field required",
+                    "type": "value_error.missing",
+                },
             ],
         ),
         (
-            {"name": 123, "surname": 456, "email": "lol"},
+            {"name": 123, "surname": 456, "email": "lol", "password": "123"},
             422,
             "Name should contains only letters",
         ),
         (
-            {"name": "Vasja", "surname": 456, "email": "lol"},
+            {"name": "Vasja", "surname": 456, "email": "lol", "password": "123"},
             422,
             "Surname should contains only letters",
         ),
         (
-            {"name": "Vasja", "surname": "Pupkin", "email": "lol"},
+            {"name": "Vasja", "surname": "Pupkin", "email": "lol", "password": "123"},
             422,
             [
                 {

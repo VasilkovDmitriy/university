@@ -2,6 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.routing import APIRouter
 
+from auth.api.handlers import auth_router
 from users.api.handlers import user_router
 
 # create instance of the app
@@ -11,6 +12,7 @@ app = FastAPI(title="university")
 main_api_router = APIRouter()
 
 # set routes to the app instance
+main_api_router.include_router(auth_router, prefix="/auth", tags=["auth"])
 main_api_router.include_router(user_router, prefix="/users", tags=["user"])
 app.include_router(main_api_router)
 

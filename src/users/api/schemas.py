@@ -12,7 +12,7 @@ LETTER_MATCH_PATTERN = re.compile(r"^[а-яА-Яa-zA-Z\-]+$")
 
 
 class ShowUser(BaseModel):
-    user_id: uuid.UUID
+    id: uuid.UUID
     name: str
     surname: str
     email: EmailStr
@@ -23,6 +23,7 @@ class UserCreate(BaseModel):
     name: str
     surname: str
     email: EmailStr
+    password: str
 
     @validator("name")
     @classmethod

@@ -12,6 +12,7 @@ from sqlalchemy.pool import NullPool
 from sqlalchemy.sql import text
 
 import settings
+from auth.services.hashing import Hasher
 from db.models import Base
 from db.session import get_db
 from main import app
@@ -71,11 +72,9 @@ async def asyncpg_pool():
 
 @pytest.fixture
 async def get_user_from_database(asyncpg_pool):
-    async def get_user(user_id: str):
+    async def get_user(id: str):
         async with asyncpg_pool.acquire() as connection:
-            return await connection.fetch(
-                "SELECT * FROM users WHERE user_id = $1;", user_id
-            )
+            return await connection.fetch("SELECT * FROM users WHERE id = $1;", id)
 
     return get_user
 
@@ -83,7 +82,7 @@ async def get_user_from_database(asyncpg_pool):
 @pytest.fixture
 async def create_user_in_database(asyncpg_pool):
     async def create_user(
-        user_id: UUID,
+        id: UUID,
         name: str,
         surname: str,
         email: str,
@@ -91,12 +90,16 @@ async def create_user_in_database(asyncpg_pool):
     ):
         async with asyncpg_pool.acquire() as connection:
             return await connection.execute(
-                "INSERT INTO users VALUES ($1, $2, $3, $4, $5)",
-                user_id,
+                """
+                INSERT INTO users (id, name, surname, email, is_active, hashed_password)
+                VALUES ($1, $2, $3, $4, $5, $6)
+                """,
+                id,
                 name,
                 surname,
                 email,
                 is_active,
+                Hasher.get_password_hash("12345678"),
             )
 
     return create_user

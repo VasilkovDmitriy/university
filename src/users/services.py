@@ -2,23 +2,27 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from auth.services.hashing import Hasher
 from users.api.schemas import ShowUser
 from users.api.schemas import UserCreate
 from users.db.dal import UserDAL
 
 
 async def create_new_user_action(body: UserCreate, session: AsyncSession) -> ShowUser:
+    print(body)
     async with session.begin():
         user_dal = UserDAL(session)
         user = await user_dal.create_user(
             name=body.name,
             surname=body.surname,
             email=body.email,
+            hashed_password=Hasher.get_password_hash(body.password),
         )
         return ShowUser(
-            user_id=user.user_id,
+            id=user.id,
             name=user.name,
             surname=user.surname,
+            hashed_password=user.hashed_password,
             email=user.email,
             is_active=user.is_active,
         )
@@ -42,7 +46,7 @@ async def get_user_by_id_action(
             return None
 
         return ShowUser(
-            user_id=user.user_id,
+            id=user.id,
             name=user.name,
             surname=user.surname,
             email=user.email,
@@ -58,7 +62,7 @@ async def get_user_by_email_action(
 
         if user := await user_dal.get_user_by_email(email):
             return ShowUser(
-                user_id=user.user_id,
+                id=user.id,
                 name=user.name,
                 surname=user.surname,
                 email=user.email,

@@ -5,7 +5,7 @@ import pytest
 
 async def test_update_user(client, create_user_in_database, get_user_from_database):
     user_data = {
-        "user_id": uuid4(),
+        "id": uuid4(),
         "name": "Vasja",
         "surname": "Pupkin",
         "email": "user@example.com",
@@ -18,36 +18,36 @@ async def test_update_user(client, create_user_in_database, get_user_from_databa
     }
     await create_user_in_database(**user_data)
 
-    resp = await client.patch(f"/users/{user_data['user_id']}", json=user_data_updated)
+    resp = await client.patch(f"/users/{user_data['id']}", json=user_data_updated)
 
     assert resp.status_code == 200
 
     resp_data = resp.json()
 
-    assert resp_data["updated_user_id"] == str(user_data["user_id"])
+    assert resp_data["updated_user_id"] == str(user_data["id"])
 
-    users_from_db = await get_user_from_database(user_data["user_id"])
+    users_from_db = await get_user_from_database(user_data["id"])
     user_from_db = dict(users_from_db[0])
 
     assert user_from_db["name"] == user_data_updated["name"]
     assert user_from_db["surname"] == user_data_updated["surname"]
     assert user_from_db["email"] == user_data_updated["email"]
     assert user_from_db["is_active"] is user_data["is_active"]
-    assert user_from_db["user_id"] == user_data["user_id"]
+    assert user_from_db["id"] == user_data["id"]
 
 
 async def test_update_user_check_one_is_updated(
     client, create_user_in_database, get_user_from_database
 ):
     not_updated_user = {
-        "user_id": uuid4(),
+        "id": uuid4(),
         "name": "Ivan",
         "surname": "Ivanov",
         "email": "ivan@kek.com",
         "is_active": True,
     }
     updated_user = {
-        "user_id": uuid4(),
+        "id": uuid4(),
         "name": "Vasja",
         "surname": "Pupkin",
         "email": "user@example.com",
@@ -61,17 +61,17 @@ async def test_update_user_check_one_is_updated(
     await create_user_in_database(**not_updated_user)
     await create_user_in_database(**updated_user)
 
-    resp = await client.patch(f"/users/{updated_user['user_id']}", json=data_for_update)
+    resp = await client.patch(f"/users/{updated_user['id']}", json=data_for_update)
 
     assert resp.status_code == 200
 
     resp_data = resp.json()
-    assert resp_data["updated_user_id"] == str(updated_user["user_id"])
+    assert resp_data["updated_user_id"] == str(updated_user["id"])
 
-    users_from_db = await get_user_from_database(updated_user["user_id"])
+    users_from_db = await get_user_from_database(updated_user["id"])
     user_from_db = dict(users_from_db[0])
 
-    assert user_from_db["user_id"] == updated_user["user_id"]
+    assert user_from_db["id"] == updated_user["id"]
     assert user_from_db["is_active"] == updated_user["is_active"]
 
     assert user_from_db["name"] == data_for_update["name"]
@@ -79,13 +79,13 @@ async def test_update_user_check_one_is_updated(
     assert user_from_db["email"] == data_for_update["email"]
 
     # check other user that data has not been changed
-    users_from_db = await get_user_from_database(not_updated_user["user_id"])
+    users_from_db = await get_user_from_database(not_updated_user["id"])
     user_from_db = dict(users_from_db[0])
     assert user_from_db["name"] == not_updated_user["name"]
     assert user_from_db["surname"] == not_updated_user["surname"]
     assert user_from_db["email"] == not_updated_user["email"]
     assert user_from_db["is_active"] == not_updated_user["is_active"]
-    assert user_from_db["user_id"] == not_updated_user["user_id"]
+    assert user_from_db["id"] == not_updated_user["id"]
 
 
 @pytest.mark.parametrize(
@@ -154,14 +154,14 @@ async def test_update_user_validation_error(
     expected_detail,
 ):
     user_data = {
-        "user_id": uuid4(),
+        "id": uuid4(),
         "name": "Vasja",
         "surname": "Pupkin",
         "email": "user@example.com",
         "is_active": True,
     }
     await create_user_in_database(**user_data)
-    resp = await client.patch(f"/users/{user_data['user_id']}", json=user_data_updated)
+    resp = await client.patch(f"/users/{user_data['id']}", json=user_data_updated)
 
     assert resp.status_code == expected_status_code
     assert resp.json()["detail"] == expected_detail
@@ -200,14 +200,14 @@ async def test_update_user_not_found_error(client):
 
 async def test_update_user_duplicate_email_error(client, create_user_in_database):
     user_data_1 = {
-        "user_id": uuid4(),
+        "id": uuid4(),
         "name": "Vasja",
         "surname": "Pupkin",
         "email": "user@example.com",
         "is_active": True,
     }
     user_data_2 = {
-        "user_id": uuid4(),
+        "id": uuid4(),
         "name": "Ivan",
         "surname": "Ivanov",
         "email": "ivan@kek.com",
@@ -220,9 +220,7 @@ async def test_update_user_duplicate_email_error(client, create_user_in_database
     await create_user_in_database(**user_data_1)
     await create_user_in_database(**user_data_2)
 
-    resp = await client.patch(
-        f"/users/{user_data_1['user_id']}", json=user_data_updated
-    )
+    resp = await client.patch(f"/users/{user_data_1['id']}", json=user_data_updated)
 
     assert resp.status_code == 409
     assert resp.json()["detail"] == "A user with this email already exists"
